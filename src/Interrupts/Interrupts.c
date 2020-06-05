@@ -53,7 +53,18 @@ void Interrupt_Disable(uint8 Int)
 
 void __interrupt(high_priority) ISRHandler(void)
 {
+    uint8 Requests = PI1->IPR & PI1->PIR & PI1->PIE;
     uint8 looper;
+    uint8 index = 0;
+    for(looper = 1; looper != 0; looper <<= 1, index++)
+    {
+        if(Requests & looper)
+        {
+            PI1->PIR &= ~looper;
+            if(PIHandlers[index] != 0) PIHandlers[index]();
+        }
+    }
+    /*uint8 looper;
     for(looper = 0; looper<16; looper++)
     {
         uint8 PIIndex = 0;
@@ -65,10 +76,11 @@ void __interrupt(high_priority) ISRHandler(void)
         }
         if((((*(PI1+PIIndex)).IPR & PIMask) != 0) && (((*(PI1+ PIIndex)).PIR & PIMask) != 0))
         {
+            (*(PI1+PIIndex)).PIR &= ~PIMask;
             if(PIHandlers[looper] != 0) PIHandlers[looper]();
-            (*(PI1+PIIndex)).PIR = 0;
+            
         }
-    }
+    }*/
 }
 
 void __interrupt(low_priority) ISRHandler2(void)
