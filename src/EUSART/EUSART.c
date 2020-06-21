@@ -85,5 +85,5 @@ void EUSART_Send(uint8 *data, uint8 len)
     TxBuff = data;
     TxLen = len-1;
     *TxReg = *(TxBuff++);
-    //Interrupt_SetInt(INT_EUSART_TX,PRIO_HIGH, &IntHandler);
+    Interrupt_SetInt(INT_EUSART_TX,PRIO_HIGH, &IntHandler);
 }

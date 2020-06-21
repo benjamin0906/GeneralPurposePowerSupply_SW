@@ -23,6 +23,7 @@
 #include "MSSP.h"
 #include "TIMER2.h"
 #include "TIMER0.h"
+#include "DAC_Driver.h"
 
 void HAL_Init(void)
 {
@@ -35,9 +36,8 @@ void HAL_Init(void)
     *((uint8*)0xFF1) &= 0x7F;
 
     Interrupt_Init();
-    dtEUSARTConf Config = {.Sync = 1, .Master = 1, .Tx9Bit = 0, .Rx9Bit = 0, .TxInv = 1, .RxInv = 0};
-    EUSART_Init(Config,9600);
     
+    DAC_Driver_Init();
     //MSSP_Init();
 }
 uint8 a;
@@ -57,15 +57,14 @@ void toggle(void)
 
 void main(void) 
 {
-    uint8 szia[] = "szia";
     HAL_Init();
     
     //TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_64, 49, toggle);
-    
-    EUSART_Send(szia,4);
+    DAC_Driver_Send(0x2345);
+
     while(1)
     {
-        
+        DAC_Driver_Task();
     }
     return;
 }
