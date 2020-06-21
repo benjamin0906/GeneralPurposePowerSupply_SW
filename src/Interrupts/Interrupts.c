@@ -6,7 +6,13 @@ static uint8 *const INTCON = (uint8*)(0xFF2);
 static uint8 *const INTCON2 = (uint8*)(0xFF1);
 static uint8 *const INTCON3 = (uint8*)(0xFF0);
 static dtPI *const PI1 = (dtPI*)(0xF9D);
-static void (*PIHandlers[16])(void);
+static dtPI *const PI2 = (dtPI*)(0xFA0);
+static uint8 HighPrioIntReg;
+static uint8 HighPrioIntClearMask;
+static uint8 LowPrioIntReg;
+static uint8 LowPrioIntClearMask;
+static void (*HighPrioIntHandler)(void);
+static void (*LowPrioIntHandler)(void);
 
 void Interrupt_Init(void);
 void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void));
@@ -15,24 +21,52 @@ void Interrupt_Disable(uint8 Int);
 void Interrupt_Init(void)
 {
     *RCON |= 0x80;
-    *INTCON |= 0xA0;
+    *INTCON = 0xC0;
+    *INTCON2 &= 0x80;
+    *INTCON3  = 0;
+    PI1->PIE = 0;
+    PI2->PIE = 0;
 }
 
 void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void))
 {
-    uint8 IntIndex = Int >> 4;
-    if(IntIndex < 2)
+    uint8 IntReg = Int >> 4;
+    if(IntReg < 2)
     {
         uint8 IntMask = 1<<(Int & 0xF);
-        IntIndex *= 3;
-        if(handler != 0) PIHandlers[((Int>>4)+1)*(Int&0xF)] = handler;
-        if(prio == PRIO_HIGH) (*(PI1+IntIndex)).IPR |= IntMask;
-        else (*(PI1+IntIndex)).IPR &= ~IntMask;
+        HighPrioIntClearMask = ~IntMask;
+        uint8 IntIndex = 3 * IntReg;
+        if(prio == PRIO_HIGH)
+        {
+            HighPrioIntReg = IntReg;
+            if(handler != 0) HighPrioIntHandler = handler;
+            (*(PI1+IntIndex)).IPR |= IntMask;
+        }
+        else
+        {
+            LowPrioIntReg = IntReg;
+            if(handler != 0) LowPrioIntHandler = handler;
+            (*(PI1+IntIndex)).IPR &= ~IntMask;
+        }
         (*(PI1+IntIndex)).PIE |= IntMask;
     }
     else
     {
         /**/
+        uint8 IntMask = 1<<(Int & 0xF);
+        HighPrioIntClearMask = ~IntMask;
+        if(handler != 0) HighPrioIntHandler = handler;
+        if(prio == PRIO_HIGH)
+        {
+            HighPrioIntReg = IntReg;
+            *INTCON2 |= IntMask;
+        }
+        else
+        {
+            LowPrioIntReg = IntReg;
+            *INTCON2 &= ~IntMask;
+        }
+        *INTCON |= IntMask<<3;
     }
 }
 
@@ -53,37 +87,23 @@ void Interrupt_Disable(uint8 Int)
 
 void __interrupt(high_priority) ISRHandler(void)
 {
-    uint8 Requests = PI1->IPR & PI1->PIR & PI1->PIE;
-    uint8 looper;
-    uint8 index = 0;
-    for(looper = 1; looper != 0; looper <<= 1, index++)
-    {
-        if(Requests & looper)
-        {
-            PI1->PIR &= ~looper;
-            if(PIHandlers[index] != 0) PIHandlers[index]();
-        }
-    }
-    /*uint8 looper;
-    for(looper = 0; looper<16; looper++)
-    {
-        uint8 PIIndex = 0;
-        uint8 PIMask = 1<<looper;
-        if(looper > 7)
-        {
-            PIMask = 1<<(looper-8);
-            PIIndex = 1;
-        }
-        if((((*(PI1+PIIndex)).IPR & PIMask) != 0) && (((*(PI1+ PIIndex)).PIR & PIMask) != 0))
-        {
-            (*(PI1+PIIndex)).PIR &= ~PIMask;
-            if(PIHandlers[looper] != 0) PIHandlers[looper]();
-            
-        }
-    }*/
+    /* Clear the interrupt flag */
+    if(HighPrioIntReg == 0) PI1->PIR &= HighPrioIntClearMask;
+    else if(HighPrioIntReg == 1) PI2->PIR &= HighPrioIntClearMask;
+    else *INTCON &= HighPrioIntClearMask;
+    
+    /* Calling the interrupt handler function */
+    if(HighPrioIntHandler != 0) HighPrioIntHandler();
+
 }
 
 void __interrupt(low_priority) ISRHandler2(void)
 {
+    /* Clear the interrupt flag */
+    if(LowPrioIntReg == 0) PI1->PIR &= LowPrioIntClearMask;
+    else if(LowPrioIntReg == 1) PI2->PIR &= LowPrioIntClearMask;
+    else *INTCON &= LowPrioIntClearMask;
     
+    /* Calling the interrupt handler function */
+    if(LowPrioIntHandler != 0) LowPrioIntHandler();
 }

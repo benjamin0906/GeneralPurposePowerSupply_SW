@@ -24,5 +24,15 @@ typedef union
     } Fields;
 } dtT0CON;
 
+typedef union
+{
+    struct
+    {
+        uint8 TMR0L;
+        uint8 TMR0H;
+    } Fields;
+    uint16 TMR0;
+} dtTMR;
+
 #endif	/* TIMER0_TYPES_H */
 

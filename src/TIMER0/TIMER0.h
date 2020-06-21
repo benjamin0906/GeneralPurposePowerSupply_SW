@@ -28,5 +28,7 @@
 #define T0_PRESC_128    0x6
 #define T0_PRESC_256    0x7
 
+extern void TIMER0_Set(uint8 Conf, uint16 Init, void (*Handler)(void));
+
 #endif	/* TIMER0_H */
 

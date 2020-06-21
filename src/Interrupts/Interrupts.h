@@ -17,6 +17,7 @@
 #define INT_EUSART_TX   0<<4|4
 #define INT_SSP         0<<4|3
 #define INT_TIMER2      0<<4|1
+#define INT_TIMER0      2<<4|2
 
 extern void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void));
 extern void Interrupt_Init(void);

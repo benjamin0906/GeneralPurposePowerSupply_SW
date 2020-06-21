@@ -46,5 +46,7 @@ extern const dtGPIO PINC5;
 extern const dtGPIO PINC6;
 extern const dtGPIO PINC7;
 
+extern const dtGPIO PIND2;
+
 #endif	/* PORTS_H */
 

@@ -13,6 +13,7 @@
 typedef struct
 {
     uint8 Sync  :1;
+    uint8 Master:1;
     uint8 Tx9Bit:1;
     uint8 Rx9Bit:1;
     uint8 RxInv :1;

@@ -37,10 +37,19 @@ void EUSART_Init(dtEUSARTConf Config, uint32 Baud)
     uint8 FinalDiv=0;
     int32 CurrDiff = 0;
     int32 PrevDiff = Baud;
-    if(Config.Tx9Bit != 0) TxSta->TX9 = 0;
-    if(Config.Rx9Bit != 0) Rcsta->RX9 = 0;
-    if(Config.Sync == 1) TxSta->SYNC = 1;
-    else TxSta->SYNC = 0;
+    TxSta->TX9 = Config.Tx9Bit;
+    Rcsta->RX9 = Config.Rx9Bit;
+    if(Config.Sync == 1)
+    {
+        TxSta->SYNC = 1;
+        TxSta->CSRC = Config.Master;
+        Rcsta->SREN = 0;
+    }
+    else
+    {
+        TxSta->SYNC = 0;
+        Rcsta->CREN = 1;
+    }
     if(Config.RxInv != 0) BaudCon->RXDTP = 1;
     if(Config.TxInv != 0) BaudCon->TXCKP = 1;
     
@@ -66,12 +75,9 @@ void EUSART_Init(dtEUSARTConf Config, uint32 Baud)
     
     *Spbrg = Brg-1;
     
-    
-    
+    Rcsta->ADDEN = 0;
     Rcsta->SPEN = 1;
     TxSta->TXEN = 1;
-    Rcsta->CREN = 1;
-    Rcsta->ADDEN = 0;
 }
 
 void EUSART_Send(uint8 *data, uint8 len)
@@ -79,5 +85,5 @@ void EUSART_Send(uint8 *data, uint8 len)
     TxBuff = data;
     TxLen = len-1;
     *TxReg = *(TxBuff++);
-    Interrupt_SetInt(INT_EUSART_TX,PRIO_HIGH, &IntHandler);
+    //Interrupt_SetInt(INT_EUSART_TX,PRIO_HIGH, &IntHandler);
 }

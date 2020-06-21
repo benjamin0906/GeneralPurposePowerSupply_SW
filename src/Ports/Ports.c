@@ -2,9 +2,9 @@
 #include "Ports_Types.h"
 #include "Ports.h"
 
-static uint8 *const LATs[3] = {(uint8*)0xF89, (uint8*)0xF8A, (uint8*)0xF8B};
-static uint8 *const TRISs[3]= {(uint8*)0xF92, (uint8*)0xF93, (uint8*)0xF94};
-static uint8 *const PORTs[3]= {(uint8*)0xF80, (uint8*)0xF81, (uint8*)0xF82};
+static uint8 *const LATs[4] = {(uint8*)0xF89, (uint8*)0xF8A, (uint8*)0xF8B, (uint8*)0xF8C};
+static uint8 *const TRISs[4]= {(uint8*)0xF92, (uint8*)0xF93, (uint8*)0xF94, (uint8*)0xF95};
+static uint8 *const PORTs[4]= {(uint8*)0xF80, (uint8*)0xF81, (uint8*)0xF82, (uint8*)0xF83};
 
 const dtGPIO PINA0  = {0x0,0x0};
 const dtGPIO PINA1  = {0x0,0x1};
@@ -30,6 +30,7 @@ const dtGPIO PINC4  = {0x2,0x4};
 const dtGPIO PINC5  = {0x2,0x5};
 const dtGPIO PINC6  = {0x2,0x6};
 const dtGPIO PINC7  = {0x2,0x7};
+const dtGPIO PIND2  = {0x3,0x2};
 
 void GpioOut(dtGPIO GPIO, uint8 State);
 uint8 GpioIn(dtGPIO GPIO);
