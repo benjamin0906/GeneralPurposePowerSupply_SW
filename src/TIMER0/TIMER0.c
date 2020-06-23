@@ -18,7 +18,7 @@ void TIMER0_Set(uint8 Conf, uint16 Init, void (*Handler)(void))
     dtTMR Temp = {.TMR0 = 0-InitValue};
     TMR->Fields.TMR0H = Temp.Fields.TMR0H;
     TMR->Fields.TMR0L = Temp.Fields.TMR0L;
-    Interrupt_SetInt(INT_TIMER0, PRIO_HIGH, TIMER0_IntHandler);
+    Interrupt_SetInt(INT_TIMER0, PRIO_LOW, TIMER0_IntHandler);
     if(Handler != 0) ExtIntHandler = Handler;
 }
 

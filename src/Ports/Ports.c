@@ -31,7 +31,10 @@ const dtGPIO PINC5  = {0x2,0x5};
 const dtGPIO PINC6  = {0x2,0x6};
 const dtGPIO PINC7  = {0x2,0x7};
 
+const dtGPIO PIND0  = {0x3,0x0};
+const dtGPIO PIND1  = {0x3,0x1};
 const dtGPIO PIND2  = {0x3,0x2};
+const dtGPIO PIND3  = {0x3,0x3};
 const dtGPIO PIND4  = {0x3,0x4};
 
 void GpioOut(dtGPIO GPIO, uint8 State);

@@ -34,17 +34,18 @@ void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void))
     if(IntReg < 2)
     {
         uint8 IntMask = 1<<(Int & 0xF);
-        HighPrioIntClearMask = ~IntMask;
         uint8 IntIndex = 3 * IntReg;
         if(prio == PRIO_HIGH)
         {
             HighPrioIntReg = IntReg;
+            HighPrioIntClearMask = ~IntMask;
             if(handler != 0) HighPrioIntHandler = handler;
             (*(PI1+IntIndex)).IPR |= IntMask;
         }
         else
         {
             LowPrioIntReg = IntReg;
+            LowPrioIntClearMask = ~IntMask;
             if(handler != 0) LowPrioIntHandler = handler;
             (*(PI1+IntIndex)).IPR &= ~IntMask;
         }
@@ -54,16 +55,18 @@ void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void))
     {
         /**/
         uint8 IntMask = 1<<(Int & 0xF);
-        HighPrioIntClearMask = ~IntMask;
-        if(handler != 0) HighPrioIntHandler = handler;
         if(prio == PRIO_HIGH)
         {
             HighPrioIntReg = IntReg;
+            HighPrioIntClearMask = ~IntMask;
+            if(handler != 0) HighPrioIntHandler = handler;
             *INTCON2 |= IntMask;
         }
         else
         {
+            LowPrioIntClearMask = ~IntMask;
             LowPrioIntReg = IntReg;
+            if(handler != 0) LowPrioIntHandler = handler;
             *INTCON2 &= ~IntMask;
         }
         *INTCON |= IntMask<<3;

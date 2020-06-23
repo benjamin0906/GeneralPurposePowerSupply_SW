@@ -25,6 +25,27 @@
 #include "TIMER0.h"
 #include "DAC_Driver.h"
 
+uint8 Ticks;
+uint8 a;
+void Ticker(void)
+{
+    if(a==0)
+    {
+        a=1;
+        GpioOut(PIND0, 1);
+    }
+    else
+    {
+        a=0;
+        GpioOut(PIND0, 0);
+    }
+    Ticks++;
+}
+uint8 GetTick(void)
+{
+    return Ticks;
+}
+
 void HAL_Init(void)
 {
     GpioDir(PINA0,0);
@@ -33,38 +54,27 @@ void HAL_Init(void)
     GpioDir(PIND2, 0);
     GpioOut(PIND2, 1);
     
+    GpioDir(PIND0, 0);
+    GpioOut(PIND0, 1);
+    
     *((uint8*)0xFF1) &= 0x7F;
 
     Interrupt_Init();
     
-    DAC_Driver_Init();
+    //DAC_Driver_Init();
     //MSSP_Init();
-}
-uint8 a;
-void toggle(void)
-{
-    if(a != 0)
-    {
-        a= 0;
-        GpioOut(PINA0,1);
-    }
-    else
-    {
-        a = 1;
-        GpioOut(PINA0,0);
-    }
 }
 
 void main(void) 
 {
     HAL_Init();
     
-    //TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_64, 49, toggle);
-    DAC_Driver_Send(0x2345);
+    TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_64, 49, Ticker);
+    //DAC_Driver_Send(0x2345);
 
     while(1)
     {
-        DAC_Driver_Task();
+        //DAC_Driver_Task();
     }
     return;
 }
