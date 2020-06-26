@@ -10,6 +10,8 @@
 
 #include "types.h"
 
+extern void Button_Task(void);
+extern uint8 Button_Value(void);
 
 #endif	/* BUTTON_H */
 

@@ -1,10 +1,13 @@
 #include "Button_Types.h"
 #include "Ports.h"
+#include "main.h"
 
 static dtButtonState State;
 static uint8 ButtonState;
+static uint8 TimeStamp;
 
 void Button_Task(void);
+uint8 Button_Value(void);
 
 void Button_Task(void)
 {
@@ -19,14 +22,20 @@ void Button_Task(void)
             {
                 State = Button_WaitForTimeout;
                 ButtonState = 1;
+                TimeStamp = GetTick();
             }
+            else ButtonState = 0;
             break;
         case Button_WaitForTimeout:
-           /* if()
+            if(TickEllapsed(TimeStamp,10) != 0)
             {
-                
-            }*/
+                State = Button_WaitForAction;
+            }
             break;
     }
 }
 
+uint8 Button_Value(void)
+{
+    return ButtonState;
+}

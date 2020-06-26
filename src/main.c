@@ -5,7 +5,9 @@
  * Created on 29 May 2020, 12:51
  */
 
-#pragma config FOSC = INTOSCIO_EC
+#pragma config FOSC = HSPLL_HS
+#pragma config PLLDIV = 4
+#pragma config CPUDIV = OSC1_PLL2
 #pragma config WDT = OFF
 #pragma config LVP = OFF
 #pragma config PBADEN = OFF
@@ -24,26 +26,26 @@
 #include "TIMER2.h"
 #include "TIMER0.h"
 #include "DAC_Driver.h"
+#include "Button.h"
+
+uint8 GetTick(void);
+uint8 TickEllapsed(uint8 TimeStamp, uint8 Timeout);
 
 uint8 Ticks;
-uint8 a;
 void Ticker(void)
 {
-    if(a==0)
-    {
-        a=1;
-        GpioOut(PIND0, 1);
-    }
-    else
-    {
-        a=0;
-        GpioOut(PIND0, 0);
-    }
     Ticks++;
 }
 uint8 GetTick(void)
 {
     return Ticks;
+}
+
+uint8 TickEllapsed(uint8 TimeStamp, uint8 Timeout)
+{
+    uint8 ret = 0;
+    if((uint8)(Ticks-TimeStamp) >= Timeout) ret = 1;
+    return ret;
 }
 
 void HAL_Init(void)
@@ -69,12 +71,32 @@ void main(void)
 {
     HAL_Init();
     
-    TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_64, 49, Ticker);
+    TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
     //DAC_Driver_Send(0x2345);
+    uint8 stamp = GetTick();
+    uint8 timeout=50;
+    uint8 t = 0;
 
     while(1)
     {
         //DAC_Driver_Task();
+        Button_Task();
+        if(Button_Value() != 0) GpioOut(PIND0, 1);
+        else GpioOut(PIND0, 0);
+        /*if(TickEllapsed(stamp,timeout) != 0)
+        {
+            stamp = GetTick();
+            if(t == 0)
+            {
+                GpioOut(PIND0, 0);
+                t = 1;
+            }
+            else
+            {
+                GpioOut(PIND0, 1);
+                t = 0;
+            }
+        }*/
     }
     return;
 }
