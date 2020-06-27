@@ -10,8 +10,15 @@
 
 #include "types.h"
 
+typedef enum
+{
+    Released,
+    Pressed,
+    LongPressed,
+} dtButtonState;
+
 extern void Button_Task(void);
-extern uint8 Button_Value(void);
+extern dtButtonState Button_Value(void);
 
 #endif	/* BUTTON_H */
 

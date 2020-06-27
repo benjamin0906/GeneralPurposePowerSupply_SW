@@ -81,7 +81,7 @@ void main(void)
     {
         //DAC_Driver_Task();
         Button_Task();
-        if(Button_Value() != 0) GpioOut(PIND0, 1);
+        if(Button_Value() != LongPressed) GpioOut(PIND0, 1);
         else GpioOut(PIND0, 0);
         /*if(TickEllapsed(stamp,timeout) != 0)
         {

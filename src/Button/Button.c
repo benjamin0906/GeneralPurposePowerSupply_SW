@@ -1,13 +1,15 @@
 #include "Button_Types.h"
+#include "Button.h"
 #include "Ports.h"
 #include "main.h"
 
-static dtButtonState State;
-static uint8 ButtonState;
+static dtButtonTaskState State;
+static dtButtonState ButtonState;
 static uint8 TimeStamp;
+static uint8 TapCounter;
 
 void Button_Task(void);
-uint8 Button_Value(void);
+dtButtonState Button_Value(void);
 
 void Button_Task(void)
 {
@@ -20,11 +22,20 @@ void Button_Task(void)
         case Button_WaitForAction:
             if(GpioIn(PINC2) == 0)
             {
+                if(TapCounter == 50) ButtonState = LongPressed;
+                else
+                {
+                    TapCounter++;
+                    ButtonState = Pressed;
+                }
                 State = Button_WaitForTimeout;
-                ButtonState = 1;
                 TimeStamp = GetTick();
             }
-            else ButtonState = 0;
+            else
+            {
+                TapCounter = 0;
+                ButtonState = Released;
+            }
             break;
         case Button_WaitForTimeout:
             if(TickEllapsed(TimeStamp,10) != 0)
@@ -35,7 +46,7 @@ void Button_Task(void)
     }
 }
 
-uint8 Button_Value(void)
+dtButtonState Button_Value(void)
 {
     return ButtonState;
 }

@@ -15,7 +15,7 @@ typedef enum
     Button_Init,
     Button_WaitForAction,
     Button_WaitForTimeout,
-} dtButtonState;
+} dtButtonTaskState;
 
 #endif	/* BUTTON_TYPES_H */
 
