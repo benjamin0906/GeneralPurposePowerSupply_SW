@@ -26,7 +26,10 @@
 #include "TIMER2.h"
 #include "TIMER0.h"
 #include "DAC_Driver.h"
-#include "Button.h"
+#include "Switch.h"
+#include "Switch2.h"
+#include "Switch3.h"
+#include "Encoder.h"
 
 uint8 GetTick(void);
 uint8 TickEllapsed(uint8 TimeStamp, uint8 Timeout);
@@ -70,7 +73,8 @@ void HAL_Init(void)
 void main(void) 
 {
     HAL_Init();
-    
+    Switch_Init();
+
     TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
     //DAC_Driver_Send(0x2345);
     uint8 stamp = GetTick();
@@ -80,8 +84,11 @@ void main(void)
     while(1)
     {
         //DAC_Driver_Task();
-        Button_Task();
-        if(Button_Value() != LongPressed) GpioOut(PIND0, 1);
+        Switch_Task();
+        Switch2_Task();
+        Switch3_Task();
+        Encoder_Task();
+        if(Switch2_Value() != Sw2Pressed) GpioOut(PIND0, 1);
         else GpioOut(PIND0, 0);
         /*if(TickEllapsed(stamp,timeout) != 0)
         {
