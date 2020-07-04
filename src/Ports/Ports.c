@@ -2,9 +2,9 @@
 #include "Ports_Types.h"
 #include "Ports.h"
 
-static uint8 *const LATs[4] = {(uint8*)0xF89, (uint8*)0xF8A, (uint8*)0xF8B, (uint8*)0xF8C};
-static uint8 *const TRISs[4]= {(uint8*)0xF92, (uint8*)0xF93, (uint8*)0xF94, (uint8*)0xF95};
-static uint8 *const PORTs[4]= {(uint8*)0xF80, (uint8*)0xF81, (uint8*)0xF82, (uint8*)0xF83};
+static uint8 *const LATs[5] = {(uint8*)0xF89, (uint8*)0xF8A, (uint8*)0xF8B, (uint8*)0xF8C, (uint8*)0xF8D};
+static uint8 *const TRISs[5]= {(uint8*)0xF92, (uint8*)0xF93, (uint8*)0xF94, (uint8*)0xF95, (uint8*)0xF96};
+static uint8 *const PORTs[5]= {(uint8*)0xF80, (uint8*)0xF81, (uint8*)0xF82, (uint8*)0xF83, (uint8*)0xF84};
 
 const dtGPIO PINA0  = {0x0,0x0};
 const dtGPIO PINA1  = {0x0,0x1};
@@ -36,6 +36,9 @@ const dtGPIO PIND1  = {0x3,0x1};
 const dtGPIO PIND2  = {0x3,0x2};
 const dtGPIO PIND3  = {0x3,0x3};
 const dtGPIO PIND4  = {0x3,0x4};
+
+const dtGPIO PINE0  = {0x4,0x0};
+const dtGPIO PINE1  = {0x4,0x1};
 
 void GpioOut(dtGPIO GPIO, uint8 State);
 uint8 GpioIn(dtGPIO GPIO);

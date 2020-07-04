@@ -39,3 +39,10 @@ void Encoder_Task(void)
         }
     }
 }
+
+uint8 Encoder_GetClicks(void)
+{
+    uint8 ret = Click;
+    Click = 0;
+    return ret;
+}

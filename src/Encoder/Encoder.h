@@ -12,6 +12,7 @@
 
 extern void Encoder_Init(void);
 extern void Encoder_Task(void);
+extern uint8 Encoder_GetClicks(void);
 
 #endif	/* ENCODER_H */
 
