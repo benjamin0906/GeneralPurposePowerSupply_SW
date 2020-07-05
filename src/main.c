@@ -27,10 +27,7 @@
 #include "TIMER0.h"
 #include "DAC_Driver.h"
 #include "Switch.h"
-#include "Switch2.h"
-#include "Switch3.h"
-#include "Encoder.h"
-#include "DisplayHandler.h"
+#include "UI.h"
 
 uint8 GetTick(void);
 uint8 TickEllapsed(uint8 TimeStamp, uint8 Timeout);
@@ -75,32 +72,17 @@ void main(void)
 {
     HAL_Init();
     Switch_Init();
-    LCDInit();
-    PutStr("Szia",0);
+    UI_Init();
     TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
     //DAC_Driver_Send(0x2345);
-    int8 t[] = "A";
-    int8 PrevClick = 0;
-    int8 Click = 0;
+    
 
     while(1)
     {
         //DAC_Driver_Task();
-        DisplayHandler_Task();
         Switch_Task();
-        Switch2_Task();
-        Switch3_Task();
-        Encoder_Task();
-        Click = Encoder_GetClicks();
-        if(Click != 0)
-        {
-            PrevClick = Click;
-            t[0] += Click;
-            LcdClear();
-            PutStr(&t,0);
-        }
-        if(Switch2_Value() != Sw2Pressed) GpioOut(PIND0, 1);
-        else GpioOut(PIND0, 0);
+
+        UI_Task();
 
     }
     return;

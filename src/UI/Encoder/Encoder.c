@@ -14,6 +14,8 @@ void Encoder_Init(void)
 
 void Encoder_Task(void)
 {
+    Switch2_Task();
+    Switch3_Task();
     if(EncState.ClickProgress == 0)
     {
         /* Wait for action */
