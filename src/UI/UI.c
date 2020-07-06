@@ -72,10 +72,6 @@ void UI_Init(void)
     LCDInit();
 }
 
-int8 t[] = "A";
-int8 PrevClick = 0;
-int8 Click = 0;
-
 void UI_Task(void)
 {
     DisplayHandler_Task();
@@ -83,7 +79,7 @@ void UI_Task(void)
     
     SetDigits();
     
-    Click = Encoder_GetClicks();
+    int8 Click = Encoder_GetClicks();
     if(Click != 0)
     {
         if(Switch_Value() != SwReleased)
