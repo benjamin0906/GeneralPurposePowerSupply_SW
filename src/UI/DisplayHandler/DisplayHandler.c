@@ -17,6 +17,12 @@ void LCDSendByte(uint8 data, uint8 CoM)
     if(DisplayHandler.OutputNum >= LCD_BUFFER_SIZE) DisplayHandler.OutputNum=0; 
 }
 
+void DisplayHandler_SetIndex(uint8 column, uint8 row)
+{
+    if(row != 0) LCDSendByte(0xA9+column,1);
+    else LCDSendByte(0x80+column,1);
+}
+
 void PutStr(uint8 *data, uint8 line)
 {
     uint8 looper;

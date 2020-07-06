@@ -14,7 +14,7 @@ extern void DisplayHandler_Task(void);
 extern void LCDInit(void);
 extern void PutStr(uint8 *data, uint8 line);
 extern void LcdClear(void);
-
+extern void DisplayHandler_SetIndex(uint8 column, uint8 row);
 
 #endif	/* DYS_H */
 
