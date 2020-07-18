@@ -22,6 +22,8 @@ typedef struct
 
 extern void EUSART_Init(dtEUSARTConf Config, uint32 Baud);
 extern void EUSART_Send(uint8 *data, uint8 len);
+extern void EUSART_Task(void);
+extern uint8 EUSART_Ready(void);
 
 #endif	/* EUSART_H */
 

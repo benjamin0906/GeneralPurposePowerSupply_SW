@@ -3,8 +3,9 @@
 #include "DisplayHandler.h"
 #include "Utilities.h"
 #include "Switch.h"
+#include "Control.h"
 
-static uint16 Value = 100;
+static uint16 Value = 5000;
 static uint16 PrevValue;
 static uint8 CoursorIndex = 4;
 
@@ -60,7 +61,7 @@ void SetDigits(void)
                 str[0] = '0';
                 break;
         }
-        
+        Control_ReqVolt(Value);
         PutStr(&str,0);
         DisplayHandler_SetIndex(CoursorIndex,0);
     }

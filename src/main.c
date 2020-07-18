@@ -25,9 +25,9 @@
 #include "MSSP.h"
 #include "TIMER2.h"
 #include "TIMER0.h"
-#include "DAC_Driver.h"
 #include "Switch.h"
 #include "UI.h"
+#include "Control.h"
 
 uint8 GetTick(void);
 uint8 TickEllapsed(uint8 TimeStamp, uint8 Timeout);
@@ -64,26 +64,25 @@ void HAL_Init(void)
 
     Interrupt_Init();
     
-    //DAC_Driver_Init();
+    //
     //MSSP_Init();
 }
 
 void main(void) 
 {
     HAL_Init();
-    Switch_Init();
-    UI_Init();
     TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
-    //DAC_Driver_Send(0x2345);
+    while(GetTick() < 50);
     
+    Switch_Init();
+    Control_Init();
+    UI_Init();
 
     while(1)
     {
-        //DAC_Driver_Task();
         Switch_Task();
-
+        Control_Task();
         UI_Task();
-
     }
     return;
 }

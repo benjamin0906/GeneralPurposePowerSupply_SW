@@ -33,8 +33,8 @@ void Interrupt_SetInt(uint8 Int, uint8 prio, void (*handler)(void))
     uint8 IntReg = Int >> 4;
     if(IntReg < 2)
     {
-        uint8 IntMask = 1<<(Int & 0xF);
-        uint8 IntIndex = 3 * IntReg;
+        volatile uint8 IntMask = 1<<(Int & 0xF);
+        volatile uint8 IntIndex = 3 * IntReg;
         if(prio == PRIO_HIGH)
         {
             HighPrioIntReg = IntReg;

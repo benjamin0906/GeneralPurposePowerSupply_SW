@@ -15,6 +15,7 @@ typedef enum
     DacIdle,
     CsLow,
     SendValue,
+    WaitForSend,
     CsHigh,
 } dtDACState;
 

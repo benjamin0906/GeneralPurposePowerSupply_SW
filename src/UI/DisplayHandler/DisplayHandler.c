@@ -52,13 +52,13 @@ void LCDInit(void)
     
     DisplayHandler.OutputCntr=0;
     DisplayHandler.OutputNum=0;
-    LCDSendByte(0x20,1);
+    
+    /* The proper turn on code is 0x20 but in case of 0x02 the device send first the high nibble full of zero and after this
+     * the low nibble with 0x2 value which turns the lcd on. */
+    LCDSendByte(0x02,1);
     
     LCDSendByte(0xF,1);
     LCDSendByte(0x01,1);
-    
-    //Tasking_Add(1, &DisplayHandler_Task);
-    //Tasking_Start(&DisplayHandler_Task);
 }
 
 void DisplayHandler_Task(void)
