@@ -1,5 +1,6 @@
 #include "Control_Types.h"
 #include "DAC_Driver.h"
+#include "MSSP.h"
 
 static dtControl Variables;
 
@@ -10,6 +11,7 @@ void Control_ReqVolt(uint16 req);
 void Control_Init(void)
 {
     DAC_Driver_Init();
+    MSSP_Init();
 }
 
 void Control_Task(void)

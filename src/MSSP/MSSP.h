@@ -16,6 +16,8 @@ typedef enum
 } dtMSSPTYPE;
 
 extern void MSSP_Init(void);
+extern void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen);
+extern uint8 MSSP_Ready(void);
 
 #endif	/* MSSP_H */
 

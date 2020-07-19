@@ -17,11 +17,12 @@ static uint8 DataLength;
 static uint8 Cntr;
 static dtMSSPState state;
 static uint8 SendType;
-static uint8* SignBack;
+static uint8 SignBack;
 
 void MSSP_Init(void);
 void MSSPIntHandler(void);
-void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen, uint8 *Sign);
+void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen);
+uint8 MSSP_Ready(void);
 
 uint8 sa = 0x40;
 uint8 a = 0xFE;
@@ -40,12 +41,10 @@ void MSSP_Init(void)
     
     Interrupt_SetInt(INT_SSP,PRIO_HIGH, &MSSPIntHandler);
     
-    uint8 sign = 0;
-    
-    /*MSSP_Send(I2C_Write,sa,&a,1,&d,10, &sign);
-    while(sign ==0);*/
-    MSSP_Send(I2C_Read,sa,&a,1,&dd,2, &sign);
-    while(sign ==0);
+    MSSP_Send(I2C_Read,sa,&a,1,&dd,2);
+    while(MSSP_Ready() == 0);
+    sign ++;
+    sign++;
 }
 
 void MSSPIntHandler(void)
@@ -111,12 +110,12 @@ void MSSPIntHandler(void)
             state = Fnished;
             break;
         case Fnished:
-            if(SignBack != 0) *SignBack = 1;
+            SignBack = 1;
             break;
     }
 }
 
-void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen, uint8 *Sign)
+void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen)
 {
     SlaveAddress = SlaveAdd<<1;
     Address = Add;
@@ -126,7 +125,11 @@ void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uin
     state = WriteSlaveAddress;
     if(ComType == I2C_Write) SendType = 0;
     else if (ComType == I2C_Read) SendType = 1;
-    SignBack = Sign;
-    *SignBack = 0;
+    SignBack = 0;
     SSPCON2->Master.SEN = 1;
+}
+
+uint8 MSSP_Ready(void)
+{
+    return SignBack != 0;
 }
