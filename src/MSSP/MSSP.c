@@ -40,11 +40,6 @@ void MSSP_Init(void)
     *SSPADD = 0x9;
     
     Interrupt_SetInt(INT_SSP,PRIO_HIGH, &MSSPIntHandler);
-    
-    MSSP_Send(I2C_Read,sa,&a,1,&dd,2);
-    while(MSSP_Ready() == 0);
-    sign ++;
-    sign++;
 }
 
 void MSSPIntHandler(void)

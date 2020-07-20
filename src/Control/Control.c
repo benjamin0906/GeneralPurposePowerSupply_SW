@@ -17,6 +17,9 @@ void Control_Init(void)
 void Control_Task(void)
 {
     DAC_Driver_Task();
+    //TODO: ina260 init should be somewhere here
+    //MSSP_Send(I2C_Read,sa,&a,1,&dd,2);
+    //while(MSSP_Ready() == 0);
     if(Variables.PrevRequestedVoltage != Variables.RequestedVoltage)
     {
         DAC_Driver_Send(Variables.RequestedVoltage);
