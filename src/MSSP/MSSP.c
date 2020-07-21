@@ -24,7 +24,6 @@ void MSSPIntHandler(void);
 void MSSP_Send(dtMSSPTYPE ComType, uint8 SlaveAdd, uint8 *Add, uint8 AddLen, uint8 *D, uint8 DataLen);
 uint8 MSSP_Ready(void);
 
-uint8 sa = 0x40;
 uint8 a = 0xFE;
 uint8 d[10] = {1,2,3,4,5,6,7,8,9,10};
 uint8 dd[10];

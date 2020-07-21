@@ -1,6 +1,6 @@
 #include "Control_Types.h"
 #include "DAC_Driver.h"
-#include "MSSP.h"
+#include "INA260_Driver.h"
 
 static dtControl Variables;
 
@@ -11,12 +11,13 @@ void Control_ReqVolt(uint16 req);
 void Control_Init(void)
 {
     DAC_Driver_Init();
-    MSSP_Init();
+    INA260_Driver_Init();
 }
 
 void Control_Task(void)
 {
     DAC_Driver_Task();
+    INA260_Driver_Task();
     //TODO: ina260 init should be somewhere here
     //MSSP_Send(I2C_Read,sa,&a,1,&dd,2);
     //while(MSSP_Ready() == 0);
