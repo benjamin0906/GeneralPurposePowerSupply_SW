@@ -38,7 +38,7 @@ void INA260_Driver_Task(void)
             {
                 Data[0] = 0x07;
                 Data[1] = 0x27;
-                MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_ConfigReg,1,&Data[0],2);
+                MSSP_Send(I2C_Write,INA260_SlaveAddress,&INA260_ConfigReg,1,&Data[0],2);
                 State = INA260_WaitForConfigWrite;
             }
             break;
@@ -61,12 +61,14 @@ void INA260_Driver_Task(void)
             break;
         case INA260_StartReadCurrent:
             MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_CurrentReg,1,&Data[0],2);
+            State = INA260_WaitForReadCurrent;
             break;
         case INA260_WaitForReadCurrent:
             if(MSSP_Ready() != 0) State = INA260_StartReadVoltage;
             break;
         case INA260_StartReadVoltage:
             MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_VoltageReg,1,&Data[0],2);
+            State = INA260_WaitForReadVoltage;
             break;
         case INA260_WaitForReadVoltage:
             if(MSSP_Ready() != 0) State = INA260_WatchAlert;
