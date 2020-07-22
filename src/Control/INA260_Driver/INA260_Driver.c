@@ -9,6 +9,7 @@ static const uint8 INA260_ConfigReg = 0x00;
 static const uint8 INA260_AlertMaskReg = 0x06;
 static const uint8 INA260_CurrentReg = 0x01;
 static const uint8 INA260_VoltageReg = 0x02;
+static const uint8 INA260_PowerReg = 0x03;
 static volatile uint8 Data[2];
 
 void INA260_Driver_Init(void);
@@ -71,6 +72,13 @@ void INA260_Driver_Task(void)
             State = INA260_WaitForReadVoltage;
             break;
         case INA260_WaitForReadVoltage:
+            if(MSSP_Ready() != 0) State = INA260_StartReadPower;
+            break;
+        case INA260_StartReadPower:
+            MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_PowerReg,1,&Data[0],2);
+            State = INA260_WaitForReadPower;
+            break;
+        case INA260_WaitForReadPower:
             if(MSSP_Ready() != 0) State = INA260_WatchAlert;
             break;
     }

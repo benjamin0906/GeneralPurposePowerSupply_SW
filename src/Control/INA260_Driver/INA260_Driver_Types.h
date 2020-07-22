@@ -21,6 +21,8 @@ typedef enum
             INA260_WaitForReadCurrent,
             INA260_StartReadVoltage,
             INA260_WaitForReadVoltage,
+            INA260_StartReadPower,
+            INA260_WaitForReadPower,
 } dtINA260DriverState;
 
 typedef struct
