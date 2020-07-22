@@ -10,12 +10,15 @@ static const uint8 INA260_AlertMaskReg = 0x06;
 static const uint8 INA260_CurrentReg = 0x01;
 static const uint8 INA260_VoltageReg = 0x02;
 static const uint8 INA260_PowerReg = 0x03;
-static volatile uint8 Data[2];
+static uint16 Voltage;
+static uint16 Current;
+static uint16 Power;
+static uint8 Data[2];
 
 void INA260_Driver_Init(void);
 void INA260_Driver_Task(void);
 void INA260_Driver_GetState(void);
-uint8 INA260_Driver_GetValues(uint16 *Voltage, uint16 *Current, uint16 *Power);
+uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, uint16 *CurrentPtr, uint16 *PowerPtr);
 
 
 void INA260_Driver_Init(void)
@@ -58,28 +61,57 @@ void INA260_Driver_Task(void)
             }
             break;
         case INA260_ReadAlertWait:
-            if(MSSP_Ready() != 0) State = INA260_StartReadCurrent;
+            if(MSSP_Ready() != 0)
+            {
+                State = INA260_StartReadCurrent;
+                Flags.NewValue = 1;
+            }
             break;
         case INA260_StartReadCurrent:
             MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_CurrentReg,1,&Data[0],2);
             State = INA260_WaitForReadCurrent;
             break;
         case INA260_WaitForReadCurrent:
-            if(MSSP_Ready() != 0) State = INA260_StartReadVoltage;
+            if(MSSP_Ready() != 0)
+            {
+                Current = (uint16)Data[0]<<8 | Data[1];
+                State = INA260_StartReadVoltage;
+            }
             break;
         case INA260_StartReadVoltage:
             MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_VoltageReg,1,&Data[0],2);
             State = INA260_WaitForReadVoltage;
             break;
         case INA260_WaitForReadVoltage:
-            if(MSSP_Ready() != 0) State = INA260_StartReadPower;
+            if(MSSP_Ready() != 0)
+            {
+                Voltage = (uint16)Data[0] <<8 | Data[1];
+                State = INA260_StartReadPower;
+            }
             break;
         case INA260_StartReadPower:
             MSSP_Send(I2C_Read,INA260_SlaveAddress,&INA260_PowerReg,1,&Data[0],2);
             State = INA260_WaitForReadPower;
             break;
         case INA260_WaitForReadPower:
-            if(MSSP_Ready() != 0) State = INA260_WatchAlert;
+            if(MSSP_Ready() != 0)
+            {
+                Power = (uint16)Data[0] <<8 | Data[1];
+                State = INA260_WatchAlert;
+            }
             break;
     }
+}
+
+uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, uint16 *CurrentPtr, uint16 *PowerPtr)
+{
+    uint8 ret = 0;
+    if(Flags.NewValue != 0)
+    {
+        if(VoltagePtr != 0) *VoltagePtr = Voltage;
+        if(CurrentPtr != 0) *CurrentPtr = Current;
+        if(PowerPtr != 0) *PowerPtr = Power;
+        ret = 1;
+    }
+    return ret;
 }
