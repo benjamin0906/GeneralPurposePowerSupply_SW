@@ -13,7 +13,7 @@
 extern void INA260_Driver_Init(void);
 extern void INA260_Driver_Task(void);
 extern void INA260_Driver_GetState(void);
-extern uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, uint16 *CurrentPtr, uint16 *PowerPtr);
+extern uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, int16 *CurrentPtr, uint16 *PowerPtr);
 
 #endif	/* INA260_DRIVER_H */
 

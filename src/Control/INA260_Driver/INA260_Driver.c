@@ -11,14 +11,14 @@ static const uint8 INA260_CurrentReg = 0x01;
 static const uint8 INA260_VoltageReg = 0x02;
 static const uint8 INA260_PowerReg = 0x03;
 static uint16 Voltage;
-static uint16 Current;
+static int16 Current;
 static uint16 Power;
 static uint8 Data[2];
 
 void INA260_Driver_Init(void);
 void INA260_Driver_Task(void);
 void INA260_Driver_GetState(void);
-uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, uint16 *CurrentPtr, uint16 *PowerPtr);
+uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, int16 *CurrentPtr, uint16 *PowerPtr);
 
 
 void INA260_Driver_Init(void)
@@ -103,7 +103,7 @@ void INA260_Driver_Task(void)
     }
 }
 
-uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, uint16 *CurrentPtr, uint16 *PowerPtr)
+uint8 INA260_Driver_GetValues(uint16 *VoltagePtr, int16 *CurrentPtr, uint16 *PowerPtr)
 {
     uint8 ret = 0;
     if(Flags.NewValue != 0)
