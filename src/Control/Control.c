@@ -3,12 +3,14 @@
 #include "INA260_Driver.h"
 
 static dtControl Variables;
-static int16 Voltage;
+static uint16 Voltage;
+static int16 Current;
 
 void Control_Init(void);
 void Control_Task(void);
 void Control_ReqVolt(uint16 req);
 uint16 Control_GetMeasuredVotlage(void);
+int16 Control_GetMeasuredCurrent(void);
 
 void Control_Init(void)
 {
@@ -28,7 +30,7 @@ void Control_Task(void)
         DAC_Driver_Send(Variables.RequestedVoltage);
         Variables.PrevRequestedVoltage = Variables.RequestedVoltage;
     }
-    INA260_Driver_GetValues(&Voltage,0,0);
+    INA260_Driver_GetValues(&Voltage,&Current,0);
 }
 
 void Control_ReqVolt(uint16 req)
@@ -44,6 +46,14 @@ uint16 Control_GetMeasuredVotlage(void)
 {
     uint8 Temp = Voltage*5;
     uint16 ret = Voltage + (Voltage>>2);
+    if((Temp & 2) != 0) ret++;
+    return ret;
+}
+
+int16 Control_GetMeasuredCurrent(void)
+{
+    uint8 Temp = Current*5;
+    int16 ret = Current + (Current>>2);
     if((Temp & 2) != 0) ret++;
     return ret;
 }

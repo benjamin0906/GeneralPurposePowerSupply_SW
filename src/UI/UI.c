@@ -18,7 +18,7 @@ void SetDigits(void)
         
         DisplayHandler_SetIndex(0,0);
         
-        uint8 str[7] = {'0','0','.','0','0','0',0};
+        uint8 str[8] = {'0','0','.','0','0','0','V',0};
         
         uint8 len = NumToStr16(Value, str);
         switch(len)
@@ -81,12 +81,26 @@ void UI_Task(void)
     DisplayHandler_Task();
     Encoder_Task();
     
-    if(TickEllapsed(TimeStamp,100) != 0)
+    if(TickEllapsed(TimeStamp,150) != 0)
     {
         TimeStamp = GetTick();
-        uint8 digits[5];
-        Dabler16Bit(Control_GetMeasuredVotlage(), digits);
-        PutStr(digits,7);
+        uint8 digits[7];
+        int16 Temp;
+        
+        Temp = Control_GetMeasuredVotlage();
+        
+        uint8 position = 16-Dabler16Bit(Temp, digits);
+        PutStr(digits,position);
+        Temp = Control_GetMeasuredCurrent();
+        position=0;
+        if(Temp < 0)
+        {
+            digits[0] = '-';
+            Temp *= -1;
+            position++;
+        }
+        Dabler16Bit(Temp, &digits[position]);
+        PutStr(digits,17);
     }
             
     
