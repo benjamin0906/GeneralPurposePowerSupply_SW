@@ -26,7 +26,7 @@ void DisplayHandler_SetIndex(uint8 column, uint8 row)
 void PutStr(uint8 *data, uint8 line)
 {
     uint8 looper = 0x80 + line;
-    if(line >= 16) looper += 25;
+    if(line >= 16) looper += 48;
     LCDSendByte(looper,1);
     /*if(line != 0) LCDSendByte(0xA9,1);
     else LCDSendByte(0x80,1);*/

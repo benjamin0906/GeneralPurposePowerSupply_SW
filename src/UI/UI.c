@@ -81,26 +81,33 @@ void UI_Task(void)
     DisplayHandler_Task();
     Encoder_Task();
     
-    if(TickEllapsed(TimeStamp,150) != 0)
+    if(TickEllapsed(TimeStamp,200) != 0)
     {
         TimeStamp = GetTick();
         uint8 digits[7];
         int16 Temp;
+        uint8 length;
         
         Temp = Control_GetMeasuredVotlage();
+        length = Dabler16Bit(Temp, digits);
+        digits[length++] = 'm';
+        digits[length++] = 'V';
+        digits[length] = 0;
         
-        uint8 position = 16-Dabler16Bit(Temp, digits);
-        PutStr(digits,position);
+        PutStr(digits,16-length);
         Temp = Control_GetMeasuredCurrent();
-        position=0;
+        length=0;
         if(Temp < 0)
         {
             digits[0] = '-';
             Temp *= -1;
-            position++;
+            length++;
         }
-        Dabler16Bit(Temp, &digits[position]);
-        PutStr(digits,17);
+        length = Dabler16Bit(14, &digits[length]);
+        digits[length++] = 'm';
+        digits[length++] = 'A';
+        digits[length] = 0;
+        PutStr(digits,32-length);
     }
             
     
