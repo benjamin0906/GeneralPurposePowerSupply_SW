@@ -4,6 +4,7 @@
 #include "Utilities.h"
 #include "Switch.h"
 #include "Control.h"
+#include "main.h"
 
 static uint16 Value = 5000;
 static uint16 PrevValue;
@@ -73,10 +74,21 @@ void UI_Init(void)
     LCDInit();
 }
 
+uint8 TimeStamp;
+
 void UI_Task(void)
 {
     DisplayHandler_Task();
     Encoder_Task();
+    
+    if(TickEllapsed(TimeStamp,100) != 0)
+    {
+        TimeStamp = GetTick();
+        uint8 digits[5];
+        Dabler16Bit(Control_GetMeasuredVotlage(), digits);
+        PutStr(digits,7);
+    }
+            
     
     SetDigits();
     

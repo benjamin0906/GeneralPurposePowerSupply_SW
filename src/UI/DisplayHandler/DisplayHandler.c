@@ -25,9 +25,11 @@ void DisplayHandler_SetIndex(uint8 column, uint8 row)
 
 void PutStr(uint8 *data, uint8 line)
 {
-    uint8 looper;
-    if(line != 0) LCDSendByte(0xA9,1);
-    else LCDSendByte(0x80,1);
+    uint8 looper = 0x80 + line;
+    if(line >= 16) looper += 25;
+    LCDSendByte(looper,1);
+    /*if(line != 0) LCDSendByte(0xA9,1);
+    else LCDSendByte(0x80,1);*/
     for(looper = 0; (data[looper] != 0)&& (looper < 16); looper++) LCDSendByte(data[looper],0);
 }
 
@@ -56,6 +58,7 @@ void LCDInit(void)
     /* The proper turn on code is 0x20 but in case of 0x02 the device send first the high nibble full of zero and after this
      * the low nibble with 0x2 value which turns the lcd on. */
     LCDSendByte(0x02,1);
+    LCDSendByte(0x28,1);
     
     LCDSendByte(0xF,1);
     LCDSendByte(0x01,1);

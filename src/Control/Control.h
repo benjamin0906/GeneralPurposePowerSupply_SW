@@ -13,6 +13,7 @@
 extern void Control_Init(void);
 extern void Control_Task(void);
 extern void Control_ReqVolt(uint16 req);
+extern uint16 Control_GetMeasuredVotlage(void);
 
 #endif	/* CONTROL_H */
 
