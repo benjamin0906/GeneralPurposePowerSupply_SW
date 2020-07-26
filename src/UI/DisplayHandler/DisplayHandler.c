@@ -67,7 +67,7 @@ void DisplayHandler_Task(void)
     switch(DisplayHandler.SM)
     {
         case LcdEnter_WaitBeforeEnable:
-            if(TickEllapsed(DisplayHandler.Timer,2) != 0)
+            if(TickEllapsed(DisplayHandler.Timer,1) != 0)
             {
                 GpioOut(LCD_EN,0);
                 DisplayHandler.SM = LcdEnter_WaitEnableHoldTime;

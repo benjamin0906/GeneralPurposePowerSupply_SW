@@ -19,7 +19,7 @@
 #define LCD_D6  PINA2
 #define LCD_D7  PINA1
 
-#define LCD_BUFFER_SIZE 30
+#define LCD_BUFFER_SIZE 40
 
 typedef enum eStateMachine
 {
