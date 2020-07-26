@@ -11,15 +11,16 @@
 static uint16 Value = 5000;
 static uint16 PrevValue;
 static uint8 CoursorIndex = 4;
-static uint8 TimeStamp;
+static uint8 MeasValueTimeStamp;
+static uint8 SetValueTimeStamp;
 
 void SetDigits(void)
 {
-    if(PrevValue != Value)
+    
+    if((PrevValue != Value) && (TickEllapsed(SetValueTimeStamp,100) != 0))
     {
         PrevValue = Value;
-        
-        DisplayHandler_SetIndex(0,0);
+        SetValueTimeStamp = GetTick();
         
         uint8 str[8] = {'0','0','.','0','0','0','V',0};
         
@@ -84,9 +85,9 @@ void UI_Task(void)
     DisplayHandler_Task();
     Encoder_Task();
     
-    if(TickEllapsed(TimeStamp,200) != 0)
+    if(TickEllapsed(MeasValueTimeStamp,200) != 0)
     {
-        TimeStamp = GetTick();
+        MeasValueTimeStamp = GetTick();
         uint8 digits[7];
         int16 Temp;
         uint8 length;
