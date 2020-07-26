@@ -57,8 +57,7 @@ void HAL_Init(void)
     GpioDir(PIND2, 0);
     GpioOut(PIND2, 1);
     
-    GpioDir(PIND0, 0);
-    GpioOut(PIND0, 1);
+    
     
     *((uint8*)0xFF1) &= 0x7F;
 
@@ -73,6 +72,8 @@ void main(void)
     HAL_Init();
     TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
     while(GetTick() < 50);
+    
+    
     
     Switch_Init();
     Control_Init();

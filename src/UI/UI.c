@@ -6,9 +6,12 @@
 #include "Control.h"
 #include "main.h"
 
+#define LED PIND0
+
 static uint16 Value = 5000;
 static uint16 PrevValue;
 static uint8 CoursorIndex = 4;
+static uint8 TimeStamp;
 
 void SetDigits(void)
 {
@@ -70,11 +73,11 @@ void SetDigits(void)
 
 void UI_Init(void)
 {
+    GpioDir(LED, 0);
+    GpioOut(LED, 0);
     Encoder_Init();
-    LCDInit();
+    LCDInit();  
 }
-
-uint8 TimeStamp;
 
 void UI_Task(void)
 {
@@ -89,7 +92,7 @@ void UI_Task(void)
         uint8 length;
         
         Temp = Control_GetMeasuredVotlage();
-        length = Dabler16Bit(Temp, digits);
+        length = NumToStr16(Temp, digits);
         digits[length++] = 'm';
         digits[length++] = 'V';
         digits[length] = 0;
@@ -103,14 +106,14 @@ void UI_Task(void)
             Temp *= -1;
             length++;
         }
-        length = Dabler16Bit(14, &digits[length]);
+        length = NumToStr16(Temp, &digits[length]);
         digits[length++] = 'm';
         digits[length++] = 'A';
         digits[length] = 0;
         PutStr(digits,32-length);
+        DisplayHandler_SetIndex(CoursorIndex,0);
     }
             
-    
     SetDigits();
     
     int8 Click = Encoder_GetClicks();

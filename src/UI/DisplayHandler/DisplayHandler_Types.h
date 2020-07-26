@@ -26,7 +26,8 @@ typedef enum eStateMachine
     
     LcdSetPinsHighNibble,
     LcdSetPinsLowNibble,
-            LcdEnter_Wait,
+            LcdEnter_WaitBeforeEnable,
+            LcdEnter_WaitEnableHoldTime,
 } dtStateMachine;
 
 typedef struct sOutputData
