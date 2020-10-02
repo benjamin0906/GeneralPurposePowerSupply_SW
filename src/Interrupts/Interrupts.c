@@ -5,7 +5,7 @@ static uint8 *const RCON = (uint8*)(0xFD0);
 static uint8 *const INTCON = (uint8*)(0xFF2);
 static uint8 *const INTCON2 = (uint8*)(0xFF1);
 static uint8 *const INTCON3 = (uint8*)(0xFF0);
-static dtPI *const PI1 = (dtPI*)(0xF9D);
+static volatile dtPI *const PI1 = (dtPI*)(0xF9D);
 static dtPI *const PI2 = (dtPI*)(0xFA0);
 static uint8 HighPrioIntReg;
 static uint8 HighPrioIntClearMask;

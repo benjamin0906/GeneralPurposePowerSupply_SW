@@ -1,10 +1,15 @@
 #include "Control_Types.h"
 #include "DAC_Driver.h"
 #include "INA260_Driver.h"
+#include "main.h"
 
 static dtControl Variables;
-static uint16 Voltage;
-static int16 Current;
+static uint16 MeasuredVoltage;
+static int16 MeasuredCurrent;
+static int16 IntegratedOutValue;
+static int16 PrevIntegratedOutValue;
+static uint8 Timestamp;
+static uint16 ReqVolt;
 
 void Control_Init(void);
 void Control_Task(void);
@@ -22,38 +27,48 @@ void Control_Task(void)
 {
     DAC_Driver_Task();
     INA260_Driver_Task();
-    //TODO: ina260 init should be somewhere here
-    //MSSP_Send(I2C_Read,sa,&a,1,&dd,2);
-    //while(MSSP_Ready() == 0);
-    if(Variables.PrevRequestedVoltage != Variables.RequestedVoltage)
+    if(PrevIntegratedOutValue != IntegratedOutValue)
     {
-        DAC_Driver_Send(Variables.RequestedVoltage);
-        Variables.PrevRequestedVoltage = Variables.RequestedVoltage;
+        DAC_Driver_Send(IntegratedOutValue);
+        PrevIntegratedOutValue = IntegratedOutValue;
     }
-    INA260_Driver_GetValues(&Voltage,&Current,0);
+    
+    if(INA260_Driver_GetValues(&MeasuredVoltage,&MeasuredCurrent,0) != 0)
+    {
+        MeasuredVoltage = MeasuredVoltage*2;
+        MeasuredCurrent = MeasuredCurrent*2;
+    }
+
+    if(TickEllapsed(Timestamp,100) != 0)
+    {
+        Timestamp = GetTick();
+        
+        /* Calculate the error value */
+        int16 error = ReqVolt - MeasuredVoltage;
+        IntegratedOutValue += error>>2;
+        
+        /* Give a lower limit to the integrated value */
+        if((IntegratedOutValue) < 0) IntegratedOutValue = 0;
+        
+        /* Give an upper limit to the Integrated error value */
+        IntegratedOutValue &= 0x7FFF;
+    }
 }
 
 void Control_ReqVolt(uint16 req)
 {
-    uint32 TempFullValue = (uint32)req<<4;
-    uint32 TempTruncatedValue = 10*(((uint32)req<<3)/5);
-    if((TempFullValue-TempTruncatedValue) >= 5) TempFullValue += 10;
-    TempFullValue /= 10;
-    Variables.RequestedVoltage = TempFullValue;
+    ReqVolt = (req<<3)/5;
 }
 
 uint16 Control_GetMeasuredVotlage(void)
 {
-    uint8 Temp = Voltage*5;
-    uint16 ret = Voltage + (Voltage>>2);
-    if((Temp & 2) != 0) ret++;
-    return ret;
+    return MeasuredVoltage;
 }
 
 int16 Control_GetMeasuredCurrent(void)
 {
-    uint8 Temp = Current*5;
-    int16 ret = Current + (Current>>2);
+    uint8 Temp = MeasuredCurrent*5;
+    int16 ret = MeasuredCurrent + (MeasuredCurrent>>2);
     if((Temp & 2) != 0) ret++;
     return ret;
 }

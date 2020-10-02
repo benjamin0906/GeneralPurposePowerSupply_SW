@@ -19,7 +19,7 @@ void LCDSendByte(uint8 data, uint8 CoM)
 
 void DisplayHandler_SetIndex(uint8 column, uint8 row)
 {
-    if(row != 0) LCDSendByte(0xA9+column,1);
+    if(row != 0) LCDSendByte(0xA8+column,1);
     else LCDSendByte(0x80+column,1);
 }
 

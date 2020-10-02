@@ -14,62 +14,27 @@ static uint8 CoursorIndex = 4;
 static uint8 MeasValueTimeStamp;
 static uint8 SetValueTimeStamp;
 
-void SetDigits(void)
+uint8 FormatDispStr(int16 Value, uint8 *digits)
 {
-    
-    if((PrevValue != Value) && (TickEllapsed(SetValueTimeStamp,100) != 0))
-    {
-        PrevValue = Value;
-        SetValueTimeStamp = GetTick();
-        
-        uint8 str[8] = {'0','0','.','0','0','0','V',0};
-        
-        uint8 len = NumToStr16(Value, str);
-        switch(len)
-        {
-            case 5:
-                str[5] = str[4];
-                str[4] = str[3];
-                str[3] = str[2];
-                str[2] = '.';
-                break;
-            case 4:
-                str[5] = str[3];
-                str[4] = str[2];
-                str[3] = str[1];
-                str[2] = '.';
-                str[1] = str[0];
-                str[0] = '0';
-                break;
-            case 3:
-                str[5] = str[2];
-                str[4] = str[1];
-                str[3] = str[0];
-                str[2] = '.';
-                str[1] = '0';
-                str[0] = '0';
-                break;
-            case 2:
-                str[5] = str[1];
-                str[4] = str[0];
-                str[3] = '0';
-                str[2] = '.';
-                str[1] = '0';
-                str[0] = '0';
-                break;
-            case 1:
-                str[5] = str[0];
-                str[4] = '0';
-                str[3] = '0';
-                str[2] = '.';
-                str[1] = '0';
-                str[0] = '0';
-                break;
-        }
-        Control_ReqVolt(Value);
-        PutStr(&str,0);
-        DisplayHandler_SetIndex(CoursorIndex,0);
-    }
+    uint8 str[5];
+    uint8 len = NumToStr16(Value, str);
+    uint8 looper = 4;
+    uint8 ret;
+    if(len == 5) looper = 5;
+    ret = looper+1;
+    digits[looper--] = str[--len];
+    if(len != 0) digits[looper--] = str[--len];
+    else digits[looper--] = '0';
+    if(len != 0) digits[looper--] = str[--len];
+    else digits[looper--] = '0';
+    digits[looper--] = '.';
+    if(len != 0) digits[looper--] = str[--len];
+    else digits[looper--] = '0';
+    if(len != 0) digits[looper--] = str[--len];
+    else digits[looper--] = '0';
+    if(len != 0) digits[looper--] = str[--len];
+    else digits[looper--] = '0';
+    return ret;
 }
 
 void UI_Init(void)
@@ -88,34 +53,46 @@ void UI_Task(void)
     if(TickEllapsed(MeasValueTimeStamp,200) != 0)
     {
         MeasValueTimeStamp = GetTick();
-        uint8 digits[7];
         int16 Temp;
-        uint8 length;
-        
+        uint8 InputValueLength;
+        uint8 OutputValueLength;
+        uint8 Digits[17];
+        uint8 OutputStr[8];
+        uint8 looper = 0;
         Temp = Control_GetMeasuredVotlage();
-        length = NumToStr16(Temp, digits);
-        digits[length++] = 'm';
-        digits[length++] = 'V';
-        digits[length] = 0;
-        
-        PutStr(digits,16-length);
+
+        if(Value < 10000)
+        {
+            looper = 1;
+            Digits[0] = '0';
+        }
+        InputValueLength = FormatDispStr(Value,&Digits[looper]) + looper;
+        Digits[InputValueLength++] = 'V';
+        OutputValueLength = FormatDispStr(Temp,OutputStr);
+        OutputStr[OutputValueLength++] = 'V'; 
+        for(looper = InputValueLength; looper < (16-OutputValueLength); looper++) Digits[looper] = ' ';
+        OutputValueLength = 0;
+        while(looper < 16)
+        {
+            Digits[looper] = OutputStr[OutputValueLength++];
+            looper++;
+        }
+        Digits[looper++] = 0;
+        looper = 0;
+        PutStr(Digits,0);
         Temp = Control_GetMeasuredCurrent();
-        length=0;
         if(Temp < 0)
         {
-            digits[0] = '-';
             Temp *= -1;
-            length++;
+            Digits[looper++] = '-';
         }
-        length = NumToStr16(Temp, &digits[length]);
-        digits[length++] = 'm';
-        digits[length++] = 'A';
-        digits[length] = 0;
-        PutStr(digits,32-length);
+        looper += FormatDispStr(Temp, &Digits[looper]);
+        Digits[looper++] = 'A';
+        Digits[looper] = 0;
+        PutStr(Digits,32-looper);
         DisplayHandler_SetIndex(CoursorIndex,0);
     }
-            
-    SetDigits();
+    Control_ReqVolt(Value);
     
     int8 Click = Encoder_GetClicks();
     if(Click != 0)
