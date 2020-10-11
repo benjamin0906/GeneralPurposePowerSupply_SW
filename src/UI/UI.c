@@ -84,8 +84,10 @@ void UI_Task(void)
         looper = 0;
         PutStr(Digits,0);
         Temp = Control_GetMeasuredCurrent();
+        Digits[looper++] = ' '; //Clearing the negative sign
         if(Temp < 0)
         {
+            /* Add the negative sign only if the value is under zero */
             Temp *= -1;
             Digits[looper++] = '-';
         }
