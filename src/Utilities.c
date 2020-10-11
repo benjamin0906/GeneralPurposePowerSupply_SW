@@ -349,3 +349,11 @@ void MemCpy(uint8 *src, uint8 *dst, uint8 length)
         dst[looper] = src[looper];
     }
 }
+
+uint32 RoundIntermediate(uint32 value)
+{
+    uint32 temp = value>>2;
+    temp = value-(temp<<2);
+    if(temp >= 4) value += 1;
+    return value;
+}

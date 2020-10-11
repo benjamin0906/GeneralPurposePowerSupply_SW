@@ -71,7 +71,7 @@ void main(void)
 {
     HAL_Init();
     TIMER0_Set(T0_ENABLE|T0_16BIT|T0_CLK_IN|T0_PRESC_1, 11999, Ticker);
-    while(GetTick() < 50);
+    while(GetTick() < 150);
     
     
     

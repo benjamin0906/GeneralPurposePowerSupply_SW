@@ -8,7 +8,7 @@
 
 #define LED PIND0
 
-static uint16 Value = 5000;
+static uint16 Value = 8000;
 static uint16 PrevValue;
 static uint8 CoursorIndex = 4;
 static uint8 MeasValueTimeStamp;
@@ -59,15 +59,18 @@ void UI_Task(void)
         uint8 Digits[17];
         uint8 OutputStr[8];
         uint8 looper = 0;
-        Temp = Control_GetMeasuredVotlage();
-
-        if(Value < 10000)
+        
+        //Temp = (((uint32)Value)*5)>>3;
+        Temp = (RoundIntermediate(((uint32)Value)*5)>>3);
+        if(Temp < 10000)
         {
             looper = 1;
             Digits[0] = '0';
         }
-        InputValueLength = FormatDispStr(Value,&Digits[looper]) + looper;
+        InputValueLength = FormatDispStr(Temp,&Digits[looper]) + looper;
         Digits[InputValueLength++] = 'V';
+        
+        Temp = Control_GetMeasuredVotlage();
         OutputValueLength = FormatDispStr(Temp,OutputStr);
         OutputStr[OutputValueLength++] = 'V'; 
         for(looper = InputValueLength; looper < (16-OutputValueLength); looper++) Digits[looper] = ' ';
@@ -113,27 +116,42 @@ void UI_Task(void)
         }
         else
         {
+            uint8 Subtract = 0;
+            if(Click < 0)
+            {
+                Subtract = 1;
+                Click *= -1;
+            }
             uint16 ClickValue;
             switch(CoursorIndex)
             {
                 case 0:
-                    ClickValue = Click*10000;
+                    ClickValue = Click*16000;
                     break;
                 case 1:
-                    ClickValue = Click*1000;
+                    ClickValue = Click*1600;
                     break;
                 case 3:
-                    ClickValue = Click*100;
+                    ClickValue = Click*160;
                     break;
                 case 4:
-                    ClickValue = Click*10;
+                    ClickValue = Click*16;
                     break;
                 case 5:
-                    ClickValue = Click;
+                    ClickValue = Click*8;
                     break;
 
             }
-            if(((Value + ClickValue) >= 0) && ((Value + ClickValue) <= 30000)) Value += ClickValue;
+            if(Subtract != 0)
+            {
+                /* The ClickValue shall be subtract from the desired voltage value */
+                if((Value-ClickValue) >= 0) Value -= ClickValue;
+            }
+            else
+            {
+                /* the ClickValue shall be added from the desired voltage value */
+                if((Value + ClickValue) <= 48000) Value += ClickValue;
+            }
         }
     }
 }

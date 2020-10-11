@@ -57,18 +57,22 @@ void Control_Task(void)
 
 void Control_ReqVolt(uint16 req)
 {
-    ReqVolt = (req<<3)/5;
+    ReqVolt = req;
+    //ReqVolt = (req<<3)/5;
 }
 
+/*
+ * this function give back the measured value in mV dimension.
+ */
 uint16 Control_GetMeasuredVotlage(void)
 {
-    return MeasuredVoltage;
+    uint32 temp = (uint32)MeasuredVoltage*5;
+    return (uint16)(temp>>3);
 }
 
 int16 Control_GetMeasuredCurrent(void)
 {
-    uint8 Temp = MeasuredCurrent*5;
-    int16 ret = MeasuredCurrent + (MeasuredCurrent>>2);
-    if((Temp & 2) != 0) ret++;
-    return ret;
+    uint32 temp = MeasuredCurrent*5;
+    return (temp)>>3;
+    return temp;
 }
