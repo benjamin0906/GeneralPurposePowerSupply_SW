@@ -14,7 +14,7 @@ extern uint8 Dabler16Bit(uint16 value, char *Digits);
 extern uint8 NumToStr(uint8 num, uint8 *buff);
 extern uint8 NumToStr16(uint16 num, uint8 *buff);
 extern void MemCpy(uint8 *src, uint8 *dst, uint8 length);
-extern uint32 RoundIntermediate(uint32 value);
+extern uint16 RoundRawToDec(uint16 value);
 
 #endif	/* UTILITIES_H */
 

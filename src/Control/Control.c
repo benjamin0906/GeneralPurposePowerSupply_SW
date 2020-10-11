@@ -2,6 +2,7 @@
 #include "DAC_Driver.h"
 #include "INA260_Driver.h"
 #include "main.h"
+#include "Utilities.h"
 
 static dtControl Variables;
 static uint16 MeasuredVoltage;
@@ -66,8 +67,7 @@ void Control_ReqVolt(uint16 req)
  */
 uint16 Control_GetMeasuredVotlage(void)
 {
-    uint32 temp = (uint32)MeasuredVoltage*5;
-    return (uint16)(temp>>3);
+    return RoundRawToDec(MeasuredVoltage);
 }
 
 int16 Control_GetMeasuredCurrent(void)

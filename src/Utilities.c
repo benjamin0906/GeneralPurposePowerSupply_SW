@@ -350,10 +350,12 @@ void MemCpy(uint8 *src, uint8 *dst, uint8 length)
     }
 }
 
-uint32 RoundIntermediate(uint32 value)
+uint16 RoundRawToDec(uint16 value)
 {
-    uint32 temp = value>>2;
-    temp = value-(temp<<2);
-    if(temp >= 4) value += 1;
-    return value;
+    uint32 temp = (uint32)value*5;
+    uint32 ret = temp;
+    ret >>= 3;
+    temp -= ret<<3;
+    if(temp >= 4) ret++;
+    return ret;
 }

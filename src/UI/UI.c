@@ -61,7 +61,7 @@ void UI_Task(void)
         uint8 looper = 0;
         
         //Temp = (((uint32)Value)*5)>>3;
-        Temp = (RoundIntermediate(((uint32)Value)*5)>>3);
+        Temp = (RoundRawToDec((Value)));
         if(Temp < 10000)
         {
             looper = 1;
