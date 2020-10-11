@@ -102,6 +102,7 @@ void UI_Task(void)
     {
         if(Switch_Value() != SwReleased)
         {
+            Click*=-1;
             uint8 PrevIndex = CoursorIndex;
             if(((CoursorIndex + Click) >= 0) && ((CoursorIndex + Click) <= 5))
             {

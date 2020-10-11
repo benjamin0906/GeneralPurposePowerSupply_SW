@@ -35,8 +35,8 @@ void Encoder_Task(void)
         /* Wait for idle */
         if((Switch3_Value() == Sw3Released) && (Switch2_Value() == Sw2Released))
         {
-            if(EncState.CWoCCW == 1) Click++;
-            else Click--;
+            if(EncState.CWoCCW == 1) Click--;
+            else Click++;
             EncState.ClickProgress = 0;
         }
     }
